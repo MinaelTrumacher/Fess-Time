@@ -15,7 +15,7 @@ Ce projet utilise un **capteur de son**, un **moteur pas à pas** et des **LEDs*
 - 🛠 **Câbles et Breadboard**  
 
 ## ⚡ Schéma de câblage  
-*(Ajoute une image du montage si possible !)*  
+<img width="752" alt="image" src="https://github.com/user-attachments/assets/d27069f9-bf85-4836-8a5e-d717b482ae68" />
 
 | **Composant** | **Broche Arduino** |
 |--------------|----------------|
