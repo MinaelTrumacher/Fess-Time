@@ -1,0 +1,45 @@
+#include <Stepper.h>
+
+const int led_rouge = 2;
+const int led_verte = 3;
+const int buzzer = 4;
+const int capteurSon = 6; // Capteur de son connecté à la broche 6
+const int pinMicro = A0;
+const int seuil = 700;
+
+const int stepsPerRevolution = 2048;
+Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
+
+void setup() {
+  pinMode(led_rouge, OUTPUT);
+  pinMode(led_verte, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  pinMode(capteurSon, INPUT); // Le capteur de son en entrée
+
+  myStepper.setSpeed(10); // Régle la vitesse du moteur (10 RPM)
+
+  Serial.begin(9600); // Pour afficher l'état du capteur dans le moniteur série
+}
+
+void loop() {
+  int valeurMicro = analogRead(pinMicro);
+  int sonDetecte = digitalRead(capteurSon); // Lire l'état du capteur de son
+
+  Serial.println(valeurMicro);// Affiche l'état du capteur dans le moniteur série
+
+  if (valeurMicro > seuil) { // Si un son est détecté
+    digitalWrite(led_verte, LOW);
+    digitalWrite(led_rouge, HIGH);
+    tone(buzzer, 440);
+    myStepper.step(stepsPerRevolution / 8); // Le moteur tourne
+  } else { // Si aucun son n'est détecté
+    digitalWrite(led_verte, HIGH);
+    digitalWrite(led_rouge, LOW);
+    noTone(buzzer);
+    myStepper.step(0); // Le moteur ne tourne pas
+  }
+  
+
+  delay(100); // Petite pause pour éviter des lectures trop rapides
+}
+
