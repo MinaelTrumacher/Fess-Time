@@ -1,0 +1,8 @@
+chaise/capteurs/pression        # publié par le capteur
+chaise/capteurs/timer           # idem
+
+chaise/commande/son             # souscrit par le haut-parleur
+chaise/commande/taser           # souscrit par le taser
+
+chaise/etat/son                 # éventuellement publié par le haut-parleur (ack ou état)
+chaise/etat/taser               # idem pour logs, sécurité, etc.
