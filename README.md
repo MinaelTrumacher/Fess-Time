@@ -1,51 +1,48 @@
-# 🚀 Détection de Son avec Arduino : Activation d’un Moteur et LEDS
+🚀 Détection de Pression avec ESP32 : Activation d’un Afficheur 7 segments et d'un Haut-parleur
 
 ## 📖 Description  
-Ce projet utilise un **capteur de son**, un **moteur pas à pas** et des **LEDs** pour réagir aux bruits détectés.  
-- **Si un son est détecté** → La **LED verte s'allume**, le **moteur tourne** et un **buzzer émet un son**.  
-- **Si aucun son n'est détecté** → La **LED rouge s'allume**, et le **moteur s’arrête**.  
+Ce projet utilise un **capteur de force** et un **afficheur 7 segments**, un **haut-parleur** pour réagir à la force détectés.  
+- **Si une pression est détecté** → L'**afficheur 7 segments** affiche XXXX, le **haut-parleur** émet un son.  
+- **Si aucune pression n'est détecté** → L'**afficheur 7 segments** affiche 0000, le **haut-parleur** n'émet pas de son.  
 
 ## 🔧 Matériel Requis  
-- 🎛 **Arduino UNO**  
-- 🎤 **Capteur de son (KY-038 ou MAX9814)**  
-- 🔴 **LED Rouge** (indique silence)  
-- 🟢 **LED Verte** (indique son détecté)  
-- 🔊 **Buzzer**  
-- 🔄 **Moteur pas à pas 28BYJ-48 + Driver ULN2003**  
-- 🛠 **Câbles et Breadboard**  
+- 🔢 **Afficheur 7 segments** (affiche la pression)
+- 🗜 **Force Censor Resistence (FCR)**  
+- 🔊 **Haut-parleur** (indique une pression)  
+- 🔋**Module Batterie**
+- ⏸ **x7 Résistance**
+- 🎮 **ESP32** (microcontroller)
 
 ## ⚡ Schéma de câblage  
-<img width="752" alt="image" src="https://github.com/user-attachments/assets/d27069f9-bf85-4836-8a5e-d717b482ae68" />
+![Shéma de cablage](https://github.com/user-attachments/assets/ce21d2d2-3df9-4a91-b573-f3e313986114)
 
-| **Composant** | **Broche Arduino** |
-|--------------|----------------|
-| LED Rouge    | 2              |
-| LED Verte    | 3              |
-| Buzzer       | 4              |
-| Capteur Son (OUT) | 6         |
-| Capteur Son (Analogique) | A0 |
-| Moteur Stepper IN1 | 8 |
-| Moteur Stepper IN2 | 10 |
-| Moteur Stepper IN3 | 9 |
-| Moteur Stepper IN4 | 11 |
+| **Composant** | **Port ESP32** |
+|---------------|----------------|
+| Afficheur 7 segments | 23      |
+| Afficheur 7 segments | 18      |
+| Afficheur 7 segments | 19      |
+| Afficheur 7 segments | 13      |
+| Afficheur 7 segments | 12      |
+| Afficheur 7 segments | 5       |
+| Afficheur 7 segments | 15      | + resistance
+| Afficheur 7 segments | 2       | + resistance
+| Afficheur 7 segments | 22      | + resistance
+| Afficheur 7 segments | 4       | + resistance
+| Afficheur 7 segments | 21      | + resistance
+| Afficheur 7 segments | 14      | + resistance
+| Force Censor Resistence (FCR) | 3v3             |
+| Force Censor Resistence (FCR) | 34              | + resistance -> GND
+| Haut-parleur | 25              |
+| Haut-parleur | GND             |
 
 ## 🚀 Installation et Utilisation  
-1. **Branchez les composants** selon le schéma.  
-2. **Téléversez le code** sur l’Arduino via l’IDE Arduino.  
-3. **Ouvrez le Moniteur Série (`Ctrl + Shift + M`)** pour voir les valeurs du capteur.  
-4. **Faites du bruit** (clap, sifflement) pour voir les LEDs et le moteur réagir.  
-
-## 💻 Explication du Code  
-- `analogRead(A0)` → Lit le niveau sonore.  
-- **Seuil défini (`700`)** → Si le son dépasse cette valeur, le moteur tourne.  
-- `tone(buzzer, 440);` → Active un son de fréquence **440Hz** si du bruit est détecté.  
-- `myStepper.step(stepsPerRevolution / 8);` → Fait tourner le moteur légèrement.  
-- `noTone(buzzer);` → Arrête le buzzer en l’absence de son.  
-
-## 🔥 Améliorations Possibles  
-✅ Ajouter un écran LCD pour afficher l’intensité du son.  
-✅ Enregistrer les sons détectés et afficher un historique.  
-✅ Ajuster automatiquement la sensibilité du capteur.  
+1. **Branchez les composants** selon le schéma.
+2. **Télécharger le projet** via Git
+3. **Modifier les information** de connection au wifi dans le code (SSID, Mot de Passe)
+4. **Téléversez le code** sur l’ESP32 via l’IDE Thonny.
+5. **Lancer le script** (nom du script) sur la Raspberry Pi [indisponible]
+6. **Lancer le code** sur l’ESP32 via l’IDE Thonny.
+7. **Pressez le FCR** pour voir les valeurs du capteur s'afficher et le haut parleur bipper.  
 
 ## 🏆 Auteur  
-Projet réalisé par Les Suceurs de Bits 🚀  
+Projet réalisé par Fess-Time 🚀  
