@@ -3,7 +3,7 @@ import network
 from time import sleep
 
 # Configuration du WiFi
-WIFI_SSID = "AndroidAP1460"
+WIFI_SSID = "iPhone"
 WIFI_PASSWORD = "toulouse31"
 
 def connect_wifi():
@@ -20,4 +20,5 @@ def connect_wifi():
 
 # Connexion au WiFi au démarrage
 connect_wifi()
+
 

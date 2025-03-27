@@ -1,61 +1,83 @@
-from machine import Pin
-from time import sleep
-import dht
+from machine import Pin, ADC, PWM
 from umqtt.simple import MQTTClient
+import utime
 
-# Configuration du serveur MQTT
-MQTT_BROKER = "192.168.69.29"
+# MQTT
+MQTT_BROKER = "172.20.10.10"
 MQTT_CLIENT_ID = "ESP32Client"
-MQTT_TOPIC_TEMP = "sensor/temperature"
-MQTT_TOPIC_HUM = "sensor/humidity"
+MQTT_TOPIC_FSR = "sensor/fsr"
 
-# Configuration du capteur DHT11
-DHT_PIN = Pin(4, Pin.IN)
-dht_sensor = dht.DHT11(DHT_PIN)
+# Buzzer
+BUZZER = PWM(Pin(25))
+BUZZER.freq(1000)
+BUZZER.duty(0)
 
-# Connexion au serveur MQTT
+# Capteur pression
+PRESSURE_SENSOR = ADC(Pin(34))
+PRESSURE_SENSOR.atten(ADC.ATTN_11DB)
+
+# Afficheur
+digits = [Pin(23, Pin.OUT), Pin(13, Pin.OUT), Pin(12, Pin.OUT), Pin(14, Pin.OUT)]
+segments = [Pin(18, Pin.OUT), Pin(5, Pin.OUT), Pin(4, Pin.OUT), Pin(2, Pin.OUT),
+            Pin(15, Pin.OUT), Pin(19, Pin.OUT), Pin(21, Pin.OUT)]
+
+numbers = [
+    [1,1,1,1,1,1,0], [0,1,1,0,0,0,0], [1,1,0,1,1,0,1], [1,1,1,1,0,0,1],
+    [0,1,1,0,0,1,1], [1,0,1,1,0,1,1], [1,0,1,1,1,1,1], [1,1,1,0,0,0,0],
+    [1,1,1,1,1,1,1], [1,1,1,1,0,1,1]
+]
+
+def display_number(num):
+    num_str = f"{num:04d}"
+    for _ in range(50):
+        for d in range(4):
+            digits[d].value(0)
+            for s in range(7):
+                segments[s].value(numbers[int(num_str[d])][s])
+            utime.sleep_ms(3)
+            digits[d].value(1)
+
+def play_ecg_bip(pressure):
+    interval = int(1000 - (pressure / 4095) * 1500)
+    BUZZER.duty(512)
+    utime.sleep_ms(100)
+    BUZZER.duty(0)
+    utime.sleep_ms(interval)
+
 def connect_mqtt():
+    print("coucou")
     try:
         client = MQTTClient(MQTT_CLIENT_ID, MQTT_BROKER)
         client.connect()
         print("Connecté au serveur MQTT")
         return client
     except Exception as e:
-        print("Erreur de connexion MQTT:", e)
+        print("Erreur MQTT:", e)
         return None
 
-# Lecture des données du capteur DHT11
-def read_sensor():
-    try:
-        dht_sensor.measure()
-        temperature = dht_sensor.temperature()
-        humidity = dht_sensor.humidity()
-        return temperature, humidity
-    except Exception as e:
-        print("Erreur de lecture du capteur DHT:", e)
-        return None, None
-
-# Programme principal
 def main():
     mqtt_client = connect_mqtt()
 
     while True:
         if not mqtt_client:
-            print("Tentative de reconnexion au serveur MQTT...")
             mqtt_client = connect_mqtt()
 
-        temperature, humidity = read_sensor()
-        if temperature is not None and humidity is not None:
-            try:
-                mqtt_client.publish(MQTT_TOPIC_TEMP, str(temperature).encode())
-                mqtt_client.publish(MQTT_TOPIC_HUM, str(humidity).encode())
-                print(f"Température: {temperature} °C, Humidité: {humidity} %")
-            except Exception as e:
-                print("Erreur de publication MQTT:", e)
-                mqtt_client = None  # Forcer la reconnexion
+        values = [PRESSURE_SENSOR.read() for _ in range(5)]
+        pressure = sum(values) // len(values)
+        scaled = int((pressure / 4095) * 9999)
 
-        sleep(2)  # Attendre 2 secondes entre chaque lecture
+        display_number(scaled)
+        print("Pression:", scaled, "/ 9999")
 
-# Démarrer le programme
-if __name__ == "__main__":
-    main()
+        if scaled > 1000:
+            play_ecg_bip(pressure)
+
+        try:
+            mqtt_client.publish(MQTT_TOPIC_FSR, str(scaled))
+        except:
+            mqtt_client = None
+
+        utime.sleep(2)
+
+main()
+
