@@ -7,7 +7,7 @@ MQTT_BROKER = "172.20.10.10"
 MQTT_CLIENT_ID = "ESP32Client"
 MQTT_TOPIC_FSR = "sensor/fsr"
 
-# Buzzer
+# Actionneur buzzer
 BUZZER = PWM(Pin(25))
 BUZZER.freq(1000)
 BUZZER.duty(0)
@@ -21,12 +21,14 @@ digits = [Pin(23, Pin.OUT), Pin(13, Pin.OUT), Pin(12, Pin.OUT), Pin(14, Pin.OUT)
 segments = [Pin(18, Pin.OUT), Pin(5, Pin.OUT), Pin(4, Pin.OUT), Pin(2, Pin.OUT),
             Pin(15, Pin.OUT), Pin(19, Pin.OUT), Pin(21, Pin.OUT)]
 
+# Table de correspondance entre les chiffres et les segments
 numbers = [
     [1,1,1,1,1,1,0], [0,1,1,0,0,0,0], [1,1,0,1,1,0,1], [1,1,1,1,0,0,1],
     [0,1,1,0,0,1,1], [1,0,1,1,0,1,1], [1,0,1,1,1,1,1], [1,1,1,0,0,0,0],
     [1,1,1,1,1,1,1], [1,1,1,1,0,1,1]
 ]
 
+# Affiche un nombre à 4 chiffres sur l'afficheur
 def display_number(num):
     num_str = f"{num:04d}"
     for _ in range(50):
@@ -37,6 +39,7 @@ def display_number(num):
             utime.sleep_ms(3)
             digits[d].value(1)
 
+# Génère un bip en fonction de la pression
 def play_ecg_bip(pressure):
     interval = int(1000 - (pressure / 4095) * 1500)
     BUZZER.duty(512)
@@ -44,6 +47,7 @@ def play_ecg_bip(pressure):
     BUZZER.duty(0)
     utime.sleep_ms(interval)
 
+# Connexion au MQTT
 def connect_mqtt():
     print("coucou")
     try:
@@ -55,6 +59,7 @@ def connect_mqtt():
         print("Erreur MQTT:", e)
         return None
 
+# Programme principal
 def main():
     mqtt_client = connect_mqtt()
 
