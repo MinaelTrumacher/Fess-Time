@@ -45,4 +45,11 @@ Ce projet utilise un **capteur de force** et un **afficheur 7 segments**, un **h
 7. **Pressez le FCR** pour voir les valeurs du capteur s'afficher et le haut parleur bipper.  
 
 ## 🏆 Auteur  
-Projet réalisé par Fess-Time 🚀  
+Projet réalisé par Fess-Time 🚀 
+
+
+
+
+Les liens des dépôts concervant l'application web:
+-https://github.com/merliin93/fess-time-api
+https://github.com/merliin93/fess-time
