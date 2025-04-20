@@ -3,8 +3,8 @@ import network
 from time import sleep
 
 # Configuration du WiFi
-WIFI_SSID = "iPhone"
-WIFI_PASSWORD = "toulouse31"
+WIFI_SSID = "iPhone" # Mettre votre WIFI_SSID
+WIFI_PASSWORD = "toulouse31" # Mettre votre WIFI_PASSWORD
 
 def connect_wifi():
     wlan = network.WLAN(network.STA_IF)

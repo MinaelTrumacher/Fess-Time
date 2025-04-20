@@ -1,55 +1,155 @@
-🚀 Détection de Pression avec ESP32 : Activation d’un Afficheur 7 segments et d'un Haut-parleur
+# 🪑 Fess Time – Dispositif IoT de Monitoring d’Assise
 
-## 📖 Description  
-Ce projet utilise un **capteur de force** et un **afficheur 7 segments**, un **haut-parleur** pour réagir à la force détectés.  
-- **Si une pression est détecté** → L'**afficheur 7 segments** affiche XXXX, le **haut-parleur** émet un son.  
-- **Si aucune pression n'est détecté** → L'**afficheur 7 segments** affiche 0000, le **haut-parleur** n'émet pas de son.  
+## 📌 Présentation
 
-## 🔧 Matériel Requis  
-- 🔢 **Afficheur 7 segments** (affiche la pression)
-- 🗜 **Force Censor Resistence (FCR)**  
-- 🔊 **Haut-parleur** (indique une pression)  
-- 🔋**Module Batterie**
-- ⏸ **x7 Résistance**
-- 🎮 **ESP32** (microcontroller)
+**Fess Time** est un projet IoT mêlant électronique embarquée, ergonomie et analyse comportementale.  
+Il permet de mesurer le temps passé assis sur une chaise équipée, afin de déclencher des actions :
+- alertes sonores,
+- notifications,
+- voire stimuli physiques (vibration, électrostimulation...).
 
-## ⚡ Schéma de câblage  
-![Shéma de cablage](https://github.com/user-attachments/assets/ce21d2d2-3df9-4a91-b573-f3e313986114)
+Ce projet combine :
+- ESP32 et capteur de pression FSR,
+- communication MQTT avec TLS,
+- bridge vers HiveMQ Cloud,
+- une application web temps réel pour visualiser les données.
 
-| **Composant** | **Port ESP32** |
-|---------------|----------------|
-| Afficheur 7 segments | 23      |
-| Afficheur 7 segments | 18      |
-| Afficheur 7 segments | 19      |
-| Afficheur 7 segments | 13      |
-| Afficheur 7 segments | 12      |
-| Afficheur 7 segments | 5       |
-| Afficheur 7 segments | 15      | + resistance
-| Afficheur 7 segments | 2       | + resistance
-| Afficheur 7 segments | 22      | + resistance
-| Afficheur 7 segments | 4       | + resistance
-| Afficheur 7 segments | 21      | + resistance
-| Afficheur 7 segments | 14      | + resistance
-| Force Censor Resistence (FCR) | 3v3             |
-| Force Censor Resistence (FCR) | 34              | + resistance -> GND
-| Haut-parleur | 25              |
-| Haut-parleur | GND             |
+---
 
-## 🚀 Installation et Utilisation  
-1. **Branchez les composants** selon le schéma.
-2. **Télécharger le projet** via Git
-3. **Modifier les information** de connection au wifi dans le code (SSID, Mot de Passe)
-4. **Téléversez le code** sur l’ESP32 via l’IDE Thonny.
-5. **Lancer le script** (nom du script) sur la Raspberry Pi [indisponible]
-6. **Lancer le code** sur l’ESP32 via l’IDE Thonny.
-7. **Pressez le FCR** pour voir les valeurs du capteur s'afficher et le haut parleur bipper.  
+## 🏗️ Architecture technique
 
-## 🏆 Auteur  
-Projet réalisé par Fess-Time 🚀 
+Capteur FSR → ESP32 → Mosquitto local → HiveMQ Cloud → Application Web (MQTT.js)
+
+- Protocoles utilisés : `MQTT`, `TLS v1.2`, `WebSocket`, `HTTP`
+- Topic principal : `sensor/fsr`
+
+---
+
+## 🧰 Matériel nécessaire
+
+### Partie capteur
+
+- ESP32 (avec MicroPython)
+- Capteur de pression FSR
+- Haut-parleur (optionnel)
+- Afficheur (optionnel)
+- Breadboard, câblage, alimentation 5V
+
+### Partie passerelle
+
+- Raspberry Pi ou PC sous Linux/WSL
+- Mosquitto
+- Accès Internet
+- Certificats TLS
+
+### Schéma de câblage
+![schéma](./assets/schema.png)
+
+| **Composant**                 | **Port ESP32** |
+|-------------------------------|----------------|
+| Afficheur 7 segments          | 23      |
+| Afficheur 7 segments          | 18      |
+| Afficheur 7 segments          | 19      |
+| Afficheur 7 segments          | 13      |
+| Afficheur 7 segments          | 12      |
+| Afficheur 7 segments          | 5       |
+| Afficheur 7 segments          | 15      | + resistance
+| Afficheur 7 segments          | 2       | + resistance
+| Afficheur 7 segments          | 22      | + resistance
+| Afficheur 7 segments          | 4       | + resistance
+| Afficheur 7 segments          | 21      | + resistance
+| Afficheur 7 segments          | 14      | + resistance
+| Force Sensor Resistence (FSR) | 3v3             |
+| Force Sensor Resistence (FSR) | 34              | + resistance -> GND
+| Haut-parleur                  | 25              |
+| Haut-parleur                  | GND             |
+---
+
+## 🚀 Démarrage rapide
+
+```bash
+# Cloner le projet
+git clone https://github.com/MinaelTrumacher/fess-time.git
+cd fess-time
+
+# Lancer l'installation Mosquitto + bridge (nécessite sudo)
+./config/setup_mosquitto_bridge.sh
+```
+
+## ⚙️ Installation & Configuration
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/MinaelTrumacher/fess-time.git
+cd fess-time
+``` 
+
+### 2. Installer Mosquitto et configurer le bridge HiveMQ
+Un script est fourni pour :
+
+- installer Mosquitto,
+
+- créer les fichiers de configuration,
+
+- télécharger le certificat TLS,
+
+- redémarrer le service.
+
+- [scriptBash](./config/setup_mosquitto_bridge.sh)
+
+### 3. Déployer le code sur l’ESP32
+- Flasher MicroPython sur l’ESP32 si nécessaire.
+
+- Uploader le code contenu dans le dossier esp32/ :
+
+- lecture analogique du capteur,
+
+- détection d’assise (valeur ≥ 0),
+
+- envoi régulier via MQTT (sensor/fsr),
+
+- déclenchement sonore et timer.
+
+### 4. Interface Web
+L’application Web se connecte à HiveMQ via MQTT.js en WebSocket.
+
+Fonctionnalités :
+
+- affichage en direct si une personne est assise,
+
+- état assis/debout,
+
+- timer de session,
+
+- alertes visuelles ou sonores.
+
+### 📡 Données transmises
+- Topic : sensor/fsr
+- Payload : valeur entière (ex: 234, 9999)
+- Seuil : toute valeur > 0 signifie que l'utilisateur est assis.
+
+### 🛠️ Suivi et Débogage
+
+``` 
+# Afficher les logs en direct
+sudo journalctl -u mosquitto -f
+```
+
+### 🧪 Améliorations futures
+- Statistiques d’assise
+
+- Historique par jour / semaine
+
+- Détection multi-utilisateur
+
+- Actionneurs physiques intégrés
+
+- Mode jeu ou pause obligatoire
+
+---
 
 
 
 
-Les liens des dépôts concervant l'application web:
--https://github.com/merliin93/fess-time-api
-https://github.com/merliin93/fess-time
+
