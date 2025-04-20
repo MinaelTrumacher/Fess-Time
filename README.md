@@ -74,6 +74,12 @@ cd fess-time
 
 # Lancer l'installation Mosquitto + bridge (nécessite sudo)
 ./config/setup_mosquitto_bridge.sh
+
+# Lancer l'interface web
+npm install 
+
+# Renseignement des informations utilisateurs dans mqtt.js
+npm start
 ```
 
 ## ⚙️ Installation & Configuration
